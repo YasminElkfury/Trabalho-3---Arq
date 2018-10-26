@@ -418,16 +418,17 @@ end control_unit;
 entity LI is
 	port (
 		
-		clock_L1, rst: in std_logic;
-		ce, rw, bw: in std_logic;
-		d_address: in reg32;
-		dados: inout reg32;
-		halt: out std_logic;
+		clock_L1, rst: 			in std_logic;
+		
+		ce, rw, bw: 			in std_logic;
+		d_address: 				in reg32;
+		halt: 					out std_logic;
 
+		dados: 					inout reg32;
+		
 		ce_L12, rw_L12, bw_L12: out std_logic;
-		d_address_out_L12: out reg32;
-		halt_L12: in std_logic
-
+		d_address_out_L12: 		out reg32;
+		halt_L12: 				in std_logic
 	);
 end entity LI;
 
@@ -443,22 +444,24 @@ end architecture behavioral;
 entity LII is
 	port (
 		
-		clock_L2, rst: in std_logic;
+		clock_L2, rst: 			in std_logic;
+		
 		ce_L12, rw_L12, bw_L12: in std_logic;
-		d_address_L12: in reg32;
-		dados_L12: inout reg32;
-		halt_L12: out std_logic;
+		d_address_L12: 			in reg32;
+		halt_L12: 				out std_logic;
+
+		dados_L12: 				inout reg32;
 
 		ce_L2M, rw_L2M, bw_L2M: out std_logic;
-		d_address_out_L2M: out reg32;
-		halt_L2M: in std_logic
-
+		d_address_out_L2M: 		out reg32;
+		halt_L2M: 				in std_logic
 	);
 end entity LII;
 
 architecture behavioral of LII is
 
-	signal hit_L2: std_logic;
+	signal hit_L2: 		std_logic; 
+	signal clockL2_int: std_logic;
 
 begin
 	
@@ -476,27 +479,45 @@ end architecture behavioral;
 entity MP is
 	port (
 		
-		clock_MP, rst: in std_logic;
+		clock_MP, rst: 			in std_logic;
+		
 		ce_L2M, rw_L2M, bw_L2M: in std_logic;
-		d_address_L2M: in reg32;
-		dados_L2M: inout reg32;
-		halt_L2M: out std_logic
+		d_address_L2M: 			in reg32;
+		halt_L2M: 				out std_logic;
+		
+		dados_L2M: 				inout reg32;
 
-		ce_MP, rw_MP, bw_MP: out std_logic;
-		d_address_out_MP: out reg32
+		ce_MP, rw_MP, bw_MP: 	out std_logic;
+		d_address_out_MP: 		out reg32
 	);
 end entity MP;
 
 architecture behavioral of MP is
 
+	signal cont: integer;
+	signal clock_MP_int: std_logic; -- CLOCK A SER USADO NO RESTO DESTA ENTIDADE
+
 begin
 	
-	divisor: process(clock_L2M) 
+	divisor: process(clock_MP) 
 	begin 
-		if(rising_edge(clock_L2M)) then 
 
-			clockL2M_int <= not(clock_L2M);
-		
+		if reset = '1'  then
+
+			cont <= 0;
+			clockMP_int <= '0';
+
+		elsif rising_edge(clock_MP) then 
+
+			if cont < 4 then
+
+				cont <= cont + 1;
+				clockMP_int <= not(clock_MP);
+			end if;
+
+		elsif cont = 4 then
+			cont <= 0;
+							
 		end if; 
 	end process divisor; 
 	
