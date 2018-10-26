@@ -449,7 +449,6 @@ entity LII is
 		dados_L12: inout reg32;
 		halt_L12: out std_logic;
 
-		clock_L2M: out std_logic;
 		ce_L2M, rw_L2M, bw_L2M: out std_logic;
 		d_address_out_L2M: out reg32;
 		halt_L2M: in std_logic
@@ -463,7 +462,6 @@ architecture behavioral of LII is
 
 begin
 	
-	clock_L2M <= clockL2_int;
 	divisor: process(clock_L2) 
 	begin 
 		if(rising_edge(clock_L2)) then 
@@ -478,7 +476,7 @@ end architecture behavioral;
 entity MP is
 	port (
 		
-		clock_L2M, rst: in std_logic;
+		clock_MP, rst: in std_logic;
 		ce_L2M, rw_L2M, bw_L2M: in std_logic;
 		d_address_L2M: in reg32;
 		dados_L2M: inout reg32;
@@ -529,6 +527,20 @@ architecture MR2 of MR2 is
 	signal IR: reg32;
 	signal uins: microinstruction;
 	signal data_address: reg32;
+	signal halt: std_logic;
+
+	-- SINAIS DO L1
+	signal ce_L12, rw_L12, bw_L12, halt_L12: std_logic;
+	signal d_address_out_L12: reg32;
+
+	-- SINAIS DO L2
+	signal ce_L2M, rw_L2M, bw_L2M, halt_L2M: std_logic;
+	signal d_address_out_L2M: reg32;
+
+	-- SINAIS DA MP
+	signal ce_MP, rw_MP. bw_MP: std_logic;
+	signal d_address_out_MP: reg32;
+
 begin
 
 	dp: entity work.datapath port map
@@ -579,7 +591,7 @@ begin
 
 	MP: entity work.MP port map (
 		
-		clock_L2M=>clock_L2M, rst=.reset,
+		clock_MP=>clock, rst=.reset,
 		ce_L2M=>ce_L2M, rw_L2M=>rw_L2M, bw_L2M=>bw_L2M,
 		d_address_L2M=>d_address_out_L2M, dados_L2M=>data,
 		halt_L2M=>halt_L2M,
