@@ -513,8 +513,7 @@ entity MR2 is
 	port
 	(
 		clock,reset: in std_logic;
-		ce: out std_logic_vector(16 downto 0);
-		rw, bw: out std_logic;
+		ce, rw, bw: out std_logic;
 		i_address, d_address: out reg32;
 		instruction: in reg32;
 		data: inout reg32;
@@ -602,34 +601,8 @@ begin
 
 	rw <= rw_MP;
 	bw <= bw_MP;
+	ce <= ce_MP;
 
-	----------------------------------------------------------------------------------------------------------
-	--- Trecho de codigo inserido para habilitar o CE dos periféricos e memória.
-	--- 	O ce(0) e da UART
-	--- 	O ce(16) e da memória de dados
-	--- 	Os demais sao de periféricos de 1 a 15
-	--- Alem deste trecho foi inserido a mais na versao gold da MR2:
-	---		"APENAS" a codificao da instrucao ERET
-	---	Alteracao na entidade com os novos sinais "intr", "inta" e o "ce" de 17 linhas
-	----------------------------------------------------------------------------------------------------------
 	d_address <= d_address_out_MP;
-
-	ce(0)  <= '1' when (uins.ceRW='1' and (data_address>=x"FFE00000" and data_address<x"FFE10000")) else '0';
-	ce(1)  <= '1' when (uins.ceRW='1' and (data_address>=x"FFE10000" and data_address<x"FFE20000")) else '0';
-	ce(2)  <= '1' when (uins.ceRW='1' and (data_address>=x"FFE20000" and data_address<x"FFE30000")) else '0';
-	ce(3)  <= '1' when (uins.ceRW='1' and (data_address>=x"FFE30000" and data_address<x"FFE40000")) else '0';
-	ce(4)  <= '1' when (uins.ceRW='1' and (data_address>=x"FFE40000" and data_address<x"FFE50000")) else '0';
-	ce(5)  <= '1' when (uins.ceRW='1' and (data_address>=x"FFE50000" and data_address<x"FFE60000")) else '0';
-	ce(6)  <= '1' when (uins.ceRW='1' and (data_address>=x"FFE60000" and data_address<x"FFE70000")) else '0';
-	ce(7)  <= '1' when (uins.ceRW='1' and (data_address>=x"FFE70000" and data_address<x"FFE80000")) else '0';
-	ce(8)  <= '1' when (uins.ceRW='1' and (data_address>=x"FFE80000" and data_address<x"FFE90000")) else '0';
-	ce(9)  <= '1' when (uins.ceRW='1' and (data_address>=x"FFE90000" and data_address<x"FFEA0000")) else '0';
-	ce(10) <= '1' when (uins.ceRW='1' and (data_address>=x"FFEA0000" and data_address<x"FFEB0000")) else '0';
-	ce(11) <= '1' when (uins.ceRW='1' and (data_address>=x"FFEB0000" and data_address<x"FFEC0000")) else '0';
-	ce(12) <= '1' when (uins.ceRW='1' and (data_address>=x"FFEC0000" and data_address<x"FFED0000")) else '0';
-	ce(13) <= '1' when (uins.ceRW='1' and (data_address>=x"FFED0000" and data_address<x"FFEE0000")) else '0';
-	ce(14) <= '1' when (uins.ceRW='1' and (data_address>=x"FFEE0000" and data_address<x"FFEF0000")) else '0';
-	ce(15) <= '1' when (uins.ceRW='1' and (data_address>=x"FFEF0000" and data_address<x"FFF00000")) else '0';
-	ce(16) <= '1' when (uins.ceRW='1' and (data_address<x"FFE00000"  or  data_address>=x"FFF00000")) else '0';
 
 end MR2;
